@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "vite",
     "build:electron-main": "tsc -p electron/tsconfig.json && node -e \"require('fs').writeFileSync('dist-electron/package.json', JSON.stringify({type:'commonjs'}))\"",
-    "dev:electron": "npm run build:electron-main && concurrently -k -s first \"vite\" \"wait-on http://localhost:5173 && electron .\"",
+    "dev:electron": "npm run prisma:copy-assets && npm run build:electron-main && concurrently -k -s first \"vite\" \"wait-on http://localhost:5173 && electron .\"",
     "build": "tsc -b && vite build",
     "prisma:prepare": "node src/main/database/prepare-prisma.mjs",
     "prisma:copy-assets": "node src/main/database/copy-prisma-engine.mjs",
