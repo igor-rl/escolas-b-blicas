@@ -42,7 +42,6 @@ jobs:
             | **macOS** (Intel) | \`EB-macOS-${version}-x64.dmg\` |
             | **Windows** (instalador) | \`EB-windows-installer-${version}.exe\` |
             | **Windows** (portátil) | \`EB-windows-portable-${version}.exe\` |
-            | **Linux** | \`EB-linux-${version}.AppImage\` |
 
             ---
 
@@ -51,8 +50,6 @@ jobs:
             **macOS** — Abra o \`.dmg\`, arraste para Aplicativos. Na primeira abertura: botão direito → Abrir.
 
             **Windows** — Execute o \`installer\` e siga os passos. Ou use a versão portátil sem instalar nada.
-
-            **Linux** — \`chmod +x EB-linux-*.AppImage\` e execute diretamente.
 
             ---
 
@@ -119,41 +116,8 @@ jobs:
           CSC_IDENTITY_AUTO_DISCOVERY: false
         run: |
           npm run build
-          npm run build:electron-main
+          npm run build:electron:prepare
           npx electron-builder --mac --arm64 --x64 --publish always
-
-  # ── Linux ─────────────────────────────────────────────────────────────────
-  build-linux:
-    needs: create-release
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Set version from tag
-        run: |
-          VERSION="${GITHUB_REF_NAME#v}"
-          node -e "
-            const fs = require('fs');
-            const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
-            pkg.version = '$VERSION';
-            fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2));
-          "
-
-      - name: Build (Linux)
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          VITE_MAPBOX_TOKEN: ${{ secrets.VITE_MAPBOX_TOKEN }}
-        run: |
-          npm run build
-          npm run build:electron-main
-          npx electron-builder --linux AppImage --x64 --publish always
 
   # ── Windows ───────────────────────────────────────────────────────────────
   build-windows:
@@ -183,5 +147,5 @@ jobs:
           VITE_MAPBOX_TOKEN: ${{ secrets.VITE_MAPBOX_TOKEN }}
         run: |
           npm run build
-          npm run build:electron-main
+          npm run build:electron:prepare
           npx electron-builder --win nsis portable --x64 --publish always

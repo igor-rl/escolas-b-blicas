@@ -1,6 +1,7 @@
 import { app, BrowserWindow, shell, ipcMain } from 'electron'
 import path from 'path'
 import { autoUpdater } from 'electron-updater'
+import { bootstrapDatabase } from '../src/main/index'
 
 const isDev = !app.isPackaged
 
@@ -99,7 +100,7 @@ function createWindow() {
     win.loadURL('http://localhost:5173')
     win.webContents.openDevTools({ mode: 'detach' })
   } else {
-    win.loadFile(path.join(__dirname, '../dist/index.html'))
+    win.loadFile(path.join(__dirname, '../../dist/index.html'))
   }
 
   win.webContents.setWindowOpenHandler(({ url }) => {
@@ -131,13 +132,20 @@ function createWindow() {
 
 // ── Boot ──────────────────────────────────────────────────────────────────────
 
-app.whenReady().then(() => {
-  registerIpcHandlers()
-  createWindow()
-  app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow()
+app
+  .whenReady()
+  .then(async () => {
+    await bootstrapDatabase()
+    registerIpcHandlers()
+    createWindow()
+    app.on('activate', () => {
+      if (BrowserWindow.getAllWindows().length === 0) createWindow()
+    })
   })
-})
+  .catch((error) => {
+    console.error('[bootstrap] Failed to initialize main process', error)
+    app.quit()
+  })
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit()

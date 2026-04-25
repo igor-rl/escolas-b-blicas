@@ -41,7 +41,6 @@ Baixe sempre a versão mais recente na [Página de Releases](https://github.com/
 | **macOS** (Intel) | `EB-macOS-0.0.0-x64.dmg` |
 | **Windows** (Setup) | `EB-windows-installer-0.0.0.exe` |
 | **Windows** (portátil) | `EB-windows-portable-0.0.0.exe` |
-| **Linux** | `EB-linux-0.0.0.AppImage` |
 
 ### macOS
 1. Abra o arquivo `.dmg`
@@ -52,11 +51,6 @@ Baixe sempre a versão mais recente na [Página de Releases](https://github.com/
 1. Execute o instalador `.exe` e siga os passos
 2. O app criará um atalho na Área de Trabalho e no Menu Iniciar
 3. Se preferir não instalar, use a versão **portable** — basta executar o `.exe` diretamente
-
-### Linux
-1. Torne o arquivo executável: `chmod +x EB-linux-0.0.0.AppImage`
-2. Execute: `./EB-linux-0.0.0.AppImage`
-
 
 ## ✨ Funcionalidades Principais
 

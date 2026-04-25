@@ -3,15 +3,18 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "main": "dist-electron/main.js",
+  "main": "dist-electron/electron/main.js",
   "scripts": {
     "dev": "vite",
     "build:electron-main": "tsc -p electron/tsconfig.json && node -e \"require('fs').writeFileSync('dist-electron/package.json', JSON.stringify({type:'commonjs'}))\"",
     "dev:electron": "npm run build:electron-main && concurrently -k -s first \"vite\" \"wait-on http://localhost:5173 && electron .\"",
     "build": "tsc -b && vite build",
-    "build:electron": "npm run build && npm run build:electron-main && electron-builder",
-    "build:electron-win": "npm run build && npm run build:electron-main && electron-builder --win nsis --x64",
-    "build:electron-win-portable": "npm run build && npm run build:electron-main && electron-builder --win portable --x64",
+    "prisma:prepare": "node src/main/database/prepare-prisma.mjs",
+    "prisma:copy-assets": "node src/main/database/copy-prisma-engine.mjs",
+    "build:electron:prepare": "npm run prisma:prepare && npm run build:electron-main && npm run prisma:copy-assets",
+    "build:electron": "npm run build && npm run build:electron:prepare && electron-builder",
+    "build:electron-win": "npm run build && npm run build:electron:prepare && electron-builder --win nsis --x64",
+    "build:electron-win-portable": "npm run build && npm run build:electron:prepare && electron-builder --win portable --x64",
     "preview": "vite preview",
     "release": "git tag v$(node -p \"require('./package.json').version\") && git push origin --tags"
   },
@@ -52,46 +55,19 @@
     },
     "portable": {
       "artifactName": "${productName}-windows-portable-${version}.${ext}"
-    },
-    "linux": {
-      "target": [
-        "AppImage"
-      ],
-      "category": "Office",
-      "artifactName": "${productName}-linux-${version}.${ext}"
     }
   },
   "dependencies": {
-    "@dnd-kit/core": "^6.3.1",
-    "@dnd-kit/sortable": "^10.0.0",
-    "@dnd-kit/utilities": "^3.2.2",
-    "@geoman-io/leaflet-geoman-free": "^2.19.2",
-    "@tailwindcss/vite": "^4.2.2",
-    "@tanstack/react-virtual": "^3.13.23",
-    "@tmcw/togeojson": "^7.1.2",
-    "dom-to-image-more": "^3.7.2",
-    "electron-updater": "^6.3.9",
-    "geojson": "^0.5.0",
-    "html2canvas": "^1.4.1",
-    "leaflet": "^1.9.4",
-    "leaflet.markercluster": "^1.5.3",
-    "lucide-react": "^0.577.0",
-    "pdf-lib": "^1.17.1",
-    "react": "^19.2.4",
-    "react-dom": "^19.2.4",
-    "react-leaflet": "^5.0.0",
-    "zustand": "^5.0.12"
+    "@prisma/client": "^6.18.0",
+    "electron-updater": "^6.3.9"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.4",
-    "@types/geojson": "^7946.0.16",
-    "@types/leaflet": "^1.9.21",
-    "@types/leaflet.markercluster": "^1.5.6",
     "@types/node": "^24.12.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
+    "@tailwindcss/vite": "^4.2.2",
     "@vitejs/plugin-react": "^6.0.1",
-    "autoprefixer": "^10.4.27",
     "concurrently": "^9.2.1",
     "electron": "^41.1.0",
     "electron-builder": "^26.8.1",
@@ -99,11 +75,13 @@
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.4.0",
-    "postcss": "^8.5.8",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
     "tailwindcss": "^4.2.2",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.57.0",
     "vite": "^8.0.1",
+    "prisma": "^6.18.0",
     "wait-on": "^9.0.4"
   }
 }

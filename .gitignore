@@ -44,3 +44,9 @@ Thumbs.db
 # ===== Lock Files =====
 # Mantém o package-lock.json — importante para reproduzir builds
 # package-lock.json  ← NÃO ignorar
+
+
+# Prisma
+src/main/database/generated/
+src/main/database/dev.db
+src/main/database/dev.db-journal
