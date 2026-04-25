@@ -1,13 +1,13 @@
 import path from 'node:path'
 import { app } from 'electron'
-import { PrismaClient } from './generated/client'
+import { PrismaClient } from './generated/client/index.js';
 
 function resolveDatabaseFilePath() {
   if (!app.isPackaged) {
-    return path.resolve(process.cwd(), 'src/main/database/dev.db')
+    return path.join(__dirname, 'dev.db');
   }
 
-  return path.join(app.getPath('userData'), 'eb.sqlite')
+  return path.join(app.getPath('userData'), 'eb.sqlite');
 }
 
 export function getDatabaseUrl() {

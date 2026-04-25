@@ -50,3 +50,4 @@ Thumbs.db
 src/main/database/generated/
 src/main/database/dev.db
 src/main/database/dev.db-journal
+src/main/database/dev.db

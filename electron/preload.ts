@@ -1,4 +1,5 @@
 import { contextBridge, ipcRenderer } from 'electron'
+import type { CreateTurmaInput, Turma } from '../src/shared/types'
 
 contextBridge.exposeInMainWorld('electronAPI', {
   // App Info
@@ -17,9 +18,26 @@ contextBridge.exposeInMainWorld('electronAPI', {
     ipcRenderer.on('updater:status', handler)
     return () => ipcRenderer.removeListener('updater:status', handler)
   },
+
+  // Turmas — CRUD completo
+  getTurmas: (): Promise<Turma[]> =>
+    ipcRenderer.invoke('db:turma:get-all'),
+
+  getTurmaById: (id: string): Promise<Turma> =>
+    ipcRenderer.invoke('db:turma:get-by-id', id),
+
+  createTurma: (data: CreateTurmaInput): Promise<Turma> =>
+    ipcRenderer.invoke('db:turma:create', data),
+
+  updateTurma: (id: string, data: Partial<CreateTurmaInput>): Promise<Turma> =>
+    ipcRenderer.invoke('db:turma:update', id, data),
+
+  deleteTurma: (id: string): Promise<{ success: boolean }> =>
+    ipcRenderer.invoke('db:turma:delete', id),
 })
 
-// Tipo exportado para o renderer
+// ── Types ────────────────────────────────────────────────────────────────────
+
 interface UpdaterStatus {
   status: 'checking' | 'available' | 'up-to-date' | 'downloading' | 'downloaded' | 'error'
   version?: string
