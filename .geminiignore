@@ -1,0 +1,25 @@
+# --- PASTAS DE BUILD E DEPENDÊNCIAS ---
+node_modules/
+dist/
+dist-electron/
+release/
+.npm-cache/
+.pnpm-store/
+
+# --- AMBIENTE E DOCKER ---
+.devcontainer/
+.git/
+.env
+*.log
+docker-compose*.yaml
+Dockerfile*
+.dockerignore
+
+# --- ARQUIVOS DE CONFIGURAÇÃO DE LINT/TOOLING (Irrelevantes para lógica) ---
+eslint.config.js
+.npmrc
+FETCH_HEAD
+
+# --- CACHES DE SISTEMA ---
+.DS_Store
+Thumbs.db

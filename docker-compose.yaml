@@ -1,0 +1,19 @@
+services:
+  escolas-biblicas:
+    build: .
+    container_name: territory-manager
+    restart: unless-stopped
+
+    volumes:
+      - .:/app
+
+    ports:
+      - "5173:5173"
+
+    environment:
+      - NODE_ENV=development
+
+    labels:
+      - "ai.access.enabled=true"
+      - "ai.allow.paths=/app/src,/app/package.json"
+      - "ai.allow.cmds=ls,cat,npm list"

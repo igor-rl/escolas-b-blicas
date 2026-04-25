@@ -1,0 +1,187 @@
+name: Build & Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  # ── Cria a Release no GitHub antes dos builds ─────────────────────────────
+  create-release:
+    runs-on: ubuntu-latest
+    outputs:
+      release_id: ${{ steps.create.outputs.id }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create GitHub Release
+        id: create
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const tag = context.ref.replace('refs/tags/', '')
+            const version = tag.replace('v', '')
+            const release = await github.rest.repos.createRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              tag_name: tag,
+              name: `EB ${tag}`,
+              draft: false,
+              prerelease: false,
+              make_latest: "true",
+              body: `## 📦 EB ${tag}
+
+            Baixe o instalador para o seu sistema:
+
+            | Sistema | Arquivo |
+            |---|---|
+            | **macOS** (Apple Silicon) | \`EB-macOS-${version}-arm64.dmg\` |
+            | **macOS** (Intel) | \`EB-macOS-${version}-x64.dmg\` |
+            | **Windows** (instalador) | \`EB-windows-installer-${version}.exe\` |
+            | **Windows** (portátil) | \`EB-windows-portable-${version}.exe\` |
+            | **Linux** | \`EB-linux-${version}.AppImage\` |
+
+            ---
+
+            ### Instalação
+
+            **macOS** — Abra o \`.dmg\`, arraste para Aplicativos. Na primeira abertura: botão direito → Abrir.
+
+            **Windows** — Execute o \`installer\` e siga os passos. Ou use a versão portátil sem instalar nada.
+
+            **Linux** — \`chmod +x EB-linux-*.AppImage\` e execute diretamente.
+
+            ---
+
+            > Os arquivos \`.yml\` e \`.blockmap\` são usados internamente para atualizações automáticas — não é necessário baixá-los.`
+            })
+            return release.data.id
+          result-encoding: string
+
+      - name: Update README.md version
+        env:
+          VERSION: ${{ github.ref_name }}
+        run: |
+          # Remove o 'v' inicial se existir
+          V_NEW="${VERSION#v}"
+          
+          # Pega a versão atual do package.json (que ainda não foi atualizada no repo)
+          V_OLD=$(node -p "require('./package.json').version")
+          
+          echo "Atualizando README: $V_OLD -> $V_NEW"
+          
+          # Substitui a versão antiga pela nova no README.md
+          node -e "
+            const fs = require('fs');
+            const readme = fs.readFileSync('README.md', 'utf8');
+            const updated = readme.split('$V_OLD').join('$V_NEW');
+            fs.writeFileSync('README.md', updated);
+          "
+          
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add README.md
+          git commit -m "docs: update README to v$V_NEW [skip ci]" || echo "No changes to commit"
+          git push origin HEAD:main
+
+  # ── macOS (arm64 + x64) ───────────────────────────────────────────────────
+  build-mac:
+    needs: create-release
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Set version from tag
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          node -e "
+            const fs = require('fs');
+            const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+            pkg.version = '$VERSION';
+            fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2));
+          "
+
+      - name: Build (macOS)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VITE_MAPBOX_TOKEN: ${{ secrets.VITE_MAPBOX_TOKEN }}
+          # Desabilita code signing — distribuição fora da App Store sem certificado pago
+          CSC_IDENTITY_AUTO_DISCOVERY: false
+        run: |
+          npm run build
+          npm run build:electron-main
+          npx electron-builder --mac --arm64 --x64 --publish always
+
+  # ── Linux ─────────────────────────────────────────────────────────────────
+  build-linux:
+    needs: create-release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Set version from tag
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          node -e "
+            const fs = require('fs');
+            const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+            pkg.version = '$VERSION';
+            fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2));
+          "
+
+      - name: Build (Linux)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VITE_MAPBOX_TOKEN: ${{ secrets.VITE_MAPBOX_TOKEN }}
+        run: |
+          npm run build
+          npm run build:electron-main
+          npx electron-builder --linux AppImage --x64 --publish always
+
+  # ── Windows ───────────────────────────────────────────────────────────────
+  build-windows:
+    needs: create-release
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Set version from tag
+        shell: pwsh
+        run: |
+          $version = "$env:GITHUB_REF_NAME".TrimStart('v')
+          $pkg = Get-Content package.json | ConvertFrom-Json
+          $pkg.version = $version
+          $pkg | ConvertTo-Json -Depth 10 | Set-Content package.json
+
+      - name: Build (Windows)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VITE_MAPBOX_TOKEN: ${{ secrets.VITE_MAPBOX_TOKEN }}
+        run: |
+          npm run build
+          npm run build:electron-main
+          npx electron-builder --win nsis portable --x64 --publish always
