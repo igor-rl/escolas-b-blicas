@@ -9,8 +9,10 @@ datasource db {
 }
 
 model Turma {
-  id        String   @id @default(uuid())
-  escola    String
-  descricao String?
-  createdAt DateTime @default(now())
+  id          String   @id @default(uuid())
+  escola      String
+  descricao   String?
+  dataInicio  String?
+  dataTermino String?
+  createdAt   DateTime @default(now())
 }
