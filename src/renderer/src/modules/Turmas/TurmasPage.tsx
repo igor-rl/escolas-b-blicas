@@ -51,9 +51,6 @@ export function TurmasPage() {
             </button>
           )}
           <div>
-            <p style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-tertiary)', margin: 0 }}>
-              Módulo Acadêmico
-            </p>
             <h1 style={{ fontSize: 16, fontWeight: 600, color: 'var(--text-primary)', margin: '2px 0 0', letterSpacing: '-0.01em' }}>
               {viewState === 'create' ? 'Nova Turma' : viewState === 'edit' ? 'Editar Turma' : 'Turmas'}
             </h1>

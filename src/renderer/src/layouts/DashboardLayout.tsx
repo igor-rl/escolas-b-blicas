@@ -1,7 +1,12 @@
-import { Outlet } from 'react-router-dom'
+import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { TitleBar } from './TitleBar'
+import { Sidebar } from './Sidebar'
+import { NAV_ITEMS } from '../modules/Shared/components/NavbarItens'
 
-export function RootLayout() {
+export function DashboardLayout() {
+  const location = useLocation()
+  const navigate = useNavigate()
+
   return (
     <div
       style={{
@@ -14,7 +19,14 @@ export function RootLayout() {
       }}
     >
       <TitleBar />
+
       <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
+        <Sidebar 
+          items={NAV_ITEMS} 
+          active={location.pathname} 
+          onNavigate={(path) => navigate(path)} 
+        />
+
         <main
           style={{
             flex: 1,
@@ -22,7 +34,7 @@ export function RootLayout() {
             background: 'var(--bg-base)',
           }}
         >
-          {/* O Outlet renderiza a página da rota atual */}
+          {/* As páginas como DashboardPage ou TurmasPage aparecem aqui */}
           <Outlet />
         </main>
       </div>
