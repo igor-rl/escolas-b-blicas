@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 
-export type Theme = 'dark' | 'light' | 'sepia'
+export type Theme = 'dark' | 'light'
 
 interface ThemeContextValue {
   theme: Theme
@@ -14,7 +14,7 @@ const ThemeContext = createContext<ThemeContextValue>({
   cycleTheme: () => {},
 })
 
-const THEMES: Theme[] = ['dark', 'light', 'sepia']
+const THEMES: Theme[] = ['dark', 'light']
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setThemeState] = useState<Theme>(() => {

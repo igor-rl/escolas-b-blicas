@@ -65,37 +65,6 @@
   color-scheme: light;
 }
 
-[data-theme="sepia"] {
-  --bg-base:        #1a1510;
-  --bg-surface:     #201a13;
-  --bg-elevated:    #281f17;
-  --bg-hover:       #302618;
-  --bg-active:      #382d1e;
-
-  --border:         #2e2318;
-  --border-subtle:  #241c12;
-  --border-strong:  #3d2f1e;
-
-  --text-primary:   #e8dcc8;
-  --text-secondary: #9a8a70;
-  --text-tertiary:  #5c4e38;
-  --text-disabled:  #3a3024;
-
-  --accent:         #b8924a;
-  --accent-hover:   #c8a25a;
-  --accent-muted:   rgba(184, 146, 74, 0.12);
-  --accent-border:  rgba(184, 146, 74, 0.22);
-
-  --danger:         #d05050;
-  --danger-hover:   #d86060;
-  --danger-muted:   rgba(208, 80, 80, 0.1);
-  --danger-border:  rgba(208, 80, 80, 0.2);
-
-  --titlebar-bg:    rgba(26, 21, 16, 0.92);
-
-  color-scheme: dark;
-}
-
 /* ── Base reset ─────────────────────────────────────────────────────────────── */
 
 html, body, #root {
