@@ -2,31 +2,36 @@ import { HashRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { ThemeProvider } from './hooks/useTheme'
 
 // Layouts
-import { DashboardLayout } from './layouts/DashboardLayout'
+import { DashboardLayout } from './modules/Dashboard/layout/DashboardLayout'
 
 // Páginas (Módulos)
 import { RootLayout } from './layouts/AppLayout'
 import { DashboardPage } from './modules/Dashboard/DashboardPage'
 import { TurmasPage } from './modules/Turmas/TurmasPage'
+import { TurmaProvider } from './modules/Dashboard/context/TurmaContext'
+import ProgramacaoPage from './modules/Dashboard/ProgramacaoPage'
 
 function App() {
   return (
     <ThemeProvider>
       <HashRouter>
         <Routes>
-          {/* Rota Raiz - Sem Sidebar */}
           <Route element={<RootLayout />}>
             <Route path="/" element={<TurmasPage/>} />
           </Route>
 
-          {/* Grupo Dashboard - Com Sidebar */}
-          <Route path="/dashboard" element={<DashboardLayout />}>
-            {/* O "index" significa que esta é a página padrão ao entrar em /dashboard */}
+          {/* O DashboardLayout cuida da estrutura visual (Sidebar) */}
+          <Route path="/dashboard/:turmaId" element={
+            <TurmaProvider> 
+              {/* Agora o Provider envolve o Layout, então a Sidebar pode usar useTurma() */}
+              <DashboardLayout />
+            </TurmaProvider>
+          }>
+            {/* O DashboardLayout deve ter um <Outlet /> onde as rotas abaixo serão renderizadas */}
             <Route index element={<DashboardPage />} />
-            {/* Se amanhã criar /dashboard/alunos, é só adicionar aqui */}
+            <Route path="programacao" element={<ProgramacaoPage />} />
           </Route>
 
-          {/* Redireciona qualquer rota inexistente para a home */}
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </HashRouter>

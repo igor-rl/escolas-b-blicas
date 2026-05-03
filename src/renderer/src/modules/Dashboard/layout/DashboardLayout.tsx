@@ -1,7 +1,7 @@
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
-import { TitleBar } from './TitleBar'
+import { TitleBar } from '../../../layouts/TitleBar'
 import { Sidebar } from './Sidebar'
-import { NAV_ITEMS } from '../modules/Shared/components/NavbarItens'
+import { NAV_ITEMS } from '../../Shared/components/NavbarItens'
 
 export function DashboardLayout() {
   const location = useLocation()

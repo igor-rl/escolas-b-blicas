@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import { useTurma } from '../context/TurmaContext'
+import { TurmaSelector } from './TurmaSelector'
 
 export type NavItem = {
   id: string
@@ -30,6 +32,7 @@ const ChevronIcon = ({ collapsed }: { collapsed: boolean }) => (
 )
 
 export function Sidebar({ items, active, onNavigate }: SidebarProps) {
+
   const [collapsed, setCollapsed] = useState(false)
 
   const width = collapsed ? 48 : 188
@@ -51,6 +54,7 @@ export function Sidebar({ items, active, onNavigate }: SidebarProps) {
     >
       {/* Nav items */}
       <nav style={{ flex: 1, padding: '8px 0' }}>
+      <TurmaSelector collapsed={collapsed} />
         {items.map((item) => {
           const isActive = item.id === active
           return (

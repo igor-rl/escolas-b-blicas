@@ -1,6 +1,6 @@
 // ── Icons ─────────────────────────────────────────────────────────────────────
 
-import type { NavItem } from "../../../layouts/Sidebar"
+import type { NavItem } from "../../Dashboard/layout/Sidebar"
 
 const HomeIcon = () => (
   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">

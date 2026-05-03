@@ -21,18 +21,13 @@ export function TurmasPage() {
     turmas, viewState, editingTurma,
     isLoading, isSaving, error,
     setViewState, createTurma,
-    startEditing, updateTurma,
-    deleteTurma, cancelForm,
+    startEditing, cancelForm,
   } = useTurmas()
 
   const isForm = viewState === 'create' || viewState === 'edit'
 
   const handleSave = (data: CreateTurmaInput) => {
-    if (viewState === 'edit' && editingTurma) {
-      updateTurma(editingTurma.id, data)
-    } else {
       createTurma(data)
-    }
   }
 
   return (
@@ -163,8 +158,6 @@ export function TurmasPage() {
             <TurmaRow
               key={t.id}
               turma={t}
-              onEdit={startEditing}
-              onDelete={deleteTurma}
             />
           ))}
         </div>
